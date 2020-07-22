@@ -1,0 +1,16 @@
+# Exemplo Json com 'inline' (aluno e aluno-atividade):
+# {
+#     "id": 9,
+#     "nome": "Bruno henrique",
+#     "tel": "3758-0450",
+#     "atividades": [
+#         {
+#             "id": 8,
+#             "descricao": "Jogador do Flamengo."
+#         },
+#         {
+#             "id": 9,
+#             "descricao": "Jogador da Seleção Brasileira"
+#         }
+#     ]
+# }

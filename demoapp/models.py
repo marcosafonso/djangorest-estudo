@@ -1,0 +1,121 @@
+from django.db import models
+
+# Create your models here.
+from django.urls import reverse
+
+
+class Product(models.Model):
+
+    sku = models.CharField(max_length=13,help_text="Enter Product Stock Keeping Unit")
+    barcode = models.CharField(max_length=13,help_text="Enter Product Barcode (ISBN, UPC ...)")
+
+    title = models.CharField(max_length=200, help_text="Enter Product Title")
+    description = models.TextField(help_text="Enter Product Description")
+
+    unitCost = models.FloatField(help_text="Enter Product Unit Cost")
+    unit = models.CharField(max_length=10,help_text="Enter Product Unit ")
+
+    quantity = models.FloatField(help_text="Enter Product Quantity")
+    minQuantity = models.FloatField(help_text="Enter Product Min Quantity")
+
+    family = models.ForeignKey('Family', on_delete=models.PROTECT)
+    location = models.ForeignKey('Location', on_delete=models.PROTECT)
+
+    def get_absolute_url(self):
+        """
+        Returns the url to access a particular instance of Product.
+        """
+        return reverse('product-detail-view', args=[str(self.id)])
+
+    def __str__(self):
+        return self.title
+
+class Family(models.Model):
+
+    reference = models.CharField(max_length=13, help_text="Enter Family Reference")
+    title = models.CharField(max_length=200, help_text="Enter Family Title")
+    description = models.TextField(help_text="Enter Family Description")
+
+    unit = models.CharField(max_length=10,help_text="Enter Family Unit ")
+
+    minQuantity = models.FloatField(help_text="Enter Family Min Quantity")
+
+    def get_absolute_url(self):
+        """
+        Returns the url to access a particular instance of Family.
+        """
+        return reverse('family-detail-view', args=[str(self.id)])
+
+    def __str__(self):
+
+        return self.title
+
+class Location(models.Model):
+
+    reference = models.CharField(max_length=20, help_text="Enter Location Reference")
+    title = models.CharField(max_length=200, help_text="Enter Location Title")
+    description = models.TextField(help_text="Enter Location Description")
+
+    def get_absolute_url(self):
+        """
+        Returns the url to access a particular instance of Location.
+        """
+        return reverse('family-detail-view', args=[str(self.id)])
+
+    def __str__(self):
+
+        return self.title
+
+
+class Transaction(models.Model):
+
+    sku = models.CharField(max_length=13,help_text="Enter Product Stock Keeping Unit")
+    barcode = models.CharField(max_length=13,help_text="Enter Product Barcode (ISBN, UPC ...)")
+
+    comment = models.TextField(help_text="Enter Product Stock Keeping Unit")
+
+    unitCost = models.FloatField(help_text="Enter Product Unit Cost")
+
+    quantity = models.FloatField(help_text="Enter Product Quantity")
+
+    product = models.ForeignKey('Product', on_delete=models.PROTECT)
+
+    date = models.DateField(null=True, blank=True)
+
+    REASONS = (
+        ('ns', 'New Stock'),
+        ('ur', 'Usable Return'),
+        ('nr', 'Unusable Return'),
+    )
+
+    reason = models.CharField(max_length=2, choices=REASONS, blank=True, default='ns', help_text='Reason for transaction')
+
+    def get_absolute_url(self):
+        """
+        Returns the url to access a particular instance of Product.
+        """
+        return reverse('transaction-detail-view', args=[str(self.id)])
+
+    def __str__(self):
+
+        return 'Transaction :  %d' % (self.id)
+
+
+class Produto(models.Model):
+    codigo = models.IntegerField(verbose_name='Código')
+    nome = models.CharField(max_length=150, verbose_name='Nome')
+    """Com a logica do formset indo para o django rest, agora é necessário ter um m2m field para apontar
+    para os cadastros que eram anteriormente o formset. A fim de simular o comportamento."""
+    fornecedores = models.ManyToManyField('ProdutoFornecedor', verbose_name='Fornecedores',
+                                          related_name='produto_fornecedor', blank=True)
+
+    def __str__(self):
+        return self.nome
+
+
+class ProdutoFornecedor(models.Model):
+    fornecedor = models.CharField(max_length=150, verbose_name='Fornecedor')
+    produto = models.ForeignKey('Produto', verbose_name='Produto', on_delete=models.PROTECT)
+
+    def __str__(self):
+        return self.fornecedor

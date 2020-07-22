@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+
+<html xmlns:v-on="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <script src="https://unpkg.com/vue"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue-resource@1.3.5"></script>
+
+    <title>Django Vue.js Demo</title>
+</head>
+
+<body>
+
+
+
+    <div id="app">
+        <ul>
+            <li v-for="location in locations">>
+                <h1> ${ location.reference }$ </h1>
+                <p> ${ location.title }$ </p>
+                <p> ${ location.description }$ </p>
+            </li>
+        </ul>
+
+
+    <form v-on:submit.prevent="addLocation">
+
+        <div>
+            <div>
+                <label for="reference">Reference</label>
+                <input
+                        type="text"
+                        id="reference"
+                        placeholder="Enter reference"
+                        v-model="newLocation.reference"
+                        required="required">
+
+                <label for="title">Title</label>
+                <input
+                        type="text"
+
+                        id="title"
+                        placeholder="Enter title"
+                        v-model="newLocation.title"
+                        required="required">
+
+            </div>
+            <div class="form-group">
+                <label for="article_body">Description</label>
+                <textarea
+                        id="article_body"
+                        placeholder="Enter description"
+                        v-model="newLocation.description"
+                        required="required"
+                        rows="3"></textarea>
+            </div>
+        </div>
+        <div>
+            <button type="button" data-dismiss="modal">Close</button>
+            <button type="submit">Save changes</button>
+        </div>
+    </form>
+
+    </div>
+
+
+    <script>
+        // using jQuery
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        var csrftoken = getCookie('csrftoken');
+
+
+           new Vue({
+               delimiters: ['${', '}$'],
+               el: '#app',
+               data: {
+                   locations: [],
+                   loadind: false,
+                   message: null,
+                   newLocation: { 'reference': null, 'title': null, 'description': null},
+               },
+               http: {
+                   root: 'http://127.0.0.2:8000',
+                   headers: {
+                       Authorization: 'Basic YXBpOnBhc3N3b3Jk',
+                       'X-CSRFToken': csrftoken,
+
+                   }
+               },
+               mounted: function () {
+                   this.getLocations();
+               },
+               methods: {
+                   getLocations: function () {
+                       this.loading = true;
+                       this.$http.get('locations/').then((response) => {
+                           this.locations = response.data;
+                           this.loading = false;
+                       })
+                           .catch((err) => {
+                               this.loading = false;
+                               console.log(err);
+                           })
+                   },
+                   addLocation: function () {
+                       this.loading = true;
+                       this.$http.post('locations/', this.newLocation).then((response) => {
+                            this.loading = false;
+
+                            })
+                           .catch((err) => {
+                               this.loading = false;
+                               console.log(err);
+                           })
+                   },
+               },
+           })
+    </script>
+
+</body>
+
+</html>
+

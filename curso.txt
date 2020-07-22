@@ -1,0 +1,11 @@
+Autenticacao:
+Quem acessa sua aplicacao:
+
+    Autenticacao: Saber quem eh a pessoa que manda request
+    Autorizacao: A pessoa Pode acessar certo recurso?
+
+Token authentication eh o ideal.
+
+Permission Class ideal eh para autorizacao.
+29604e9d44c5426c80dc80dd08ff125f90d9eb53
+
